@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Secrets
+.env
+.env.local
+
+# Each subproject under mcp-servers/ (and elsewhere) keeps its own .gitignore
+# for language-specific build artifacts (target/, build/, .venv/, __pycache__/, etc.).
