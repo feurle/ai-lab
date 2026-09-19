@@ -1,0 +1,18 @@
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  application:
+    name: mcp-openhab-server
+  ai:
+    mcp:
+      server:
+        name: mcp-openhab-server
+        version: 1.0.0
+        sse-message-endpoint: /mcp/message
+server:
+  port: 8081
+
+openhab:
+  base-url: ${OPENHAB_BASE_URL:http://openhab.feurle.com}
+  api-token: ${OPENHAB_API_TOKEN}
+
