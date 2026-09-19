@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from dotenv import find_dotenv, load_dotenv
 
-DEFAULT_BASE_URL = "http://openhab.feurle.com"
+DEFAULT_BASE_URL = "http://localhost:8080"
 DEFAULT_TRANSPORT = "streamable-http"
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 8081

@@ -31,14 +31,14 @@ project directory (see `.env.example`; `.env` is git-ignored). CLI flags overrid
 | Variable            | Default                     | Description                                        |
 |---------------------|-----------------------------|----------------------------------------------------|
 | `OPENHAB_API_TOKEN` | *(required)*                | Bearer token for the OpenHAB REST API              |
-| `OPENHAB_BASE_URL`  | `http://openhab.feurle.com` | Base URL of your OpenHAB instance                  |
+| `OPENHAB_BASE_URL`  | `http://localhost:8080` | Base URL of your OpenHAB instance                  |
 | `MCP_TRANSPORT`     | `streamable-http`           | `streamable-http`, `sse` or `stdio`                |
 | `MCP_HOST`          | `0.0.0.0`                   | Bind address (http transports only)                |
 | `MCP_PORT`          | `8081`                      | Port (http transports only)                        |
 
 ```bash
 # Different OpenHAB host
-OPENHAB_API_TOKEN=... OPENHAB_BASE_URL=http://192.168.1.100:8080 uv run openhab-mcp
+OPENHAB_API_TOKEN=... OPENHAB_BASE_URL=http://localhost:8080 uv run openhab-mcp
 
 # Legacy SSE transport on another port
 uv run openhab-mcp --transport sse --port 9000
@@ -76,7 +76,7 @@ For `--transport sse` use `"url": "http://localhost:8081/sse"`.
       ],
       "env": {
         "OPENHAB_API_TOKEN": "your-api-token-here",
-        "OPENHAB_BASE_URL": "http://openhab.feurle.com"
+        "OPENHAB_BASE_URL": "http://localhost:8080"
       }
     }
   }

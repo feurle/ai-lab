@@ -13,6 +13,6 @@ server:
   port: 8081
 
 openhab:
-  base-url: ${OPENHAB_BASE_URL:http://openhab.feurle.com}
+  base-url: ${OPENHAB_BASE_URL:http://localhost:8080}
   api-token: ${OPENHAB_API_TOKEN}
 

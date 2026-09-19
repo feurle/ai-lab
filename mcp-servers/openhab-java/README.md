@@ -42,7 +42,7 @@ Either export environment variables:
 
 ```bash
 export OPENHAB_API_TOKEN="your-api-token-here"
-export OPENHAB_BASE_URL="http://your-openhab-url"   # optional, defaults to http://openhab.feurle.com
+export OPENHAB_BASE_URL="http://your-openhab-url"   # optional, defaults to http://localhost:8080
 ```
 
 or copy `.env.example` to `.env` and fill in your values — Spring Boot loads it automatically on
@@ -72,21 +72,21 @@ resolved in `src/main/resources/application.yaml`:
 
 ```yaml
 openhab:
-  base-url: ${OPENHAB_BASE_URL:http://openhab.feurle.com}
+  base-url: ${OPENHAB_BASE_URL:http://localhost:8080}
   api-token: ${OPENHAB_API_TOKEN}
 ```
 
 | Variable            | Default                     | Description                           |
 |---------------------|------------------------------|----------------------------------------|
 | `OPENHAB_API_TOKEN` | *(required)*                 | Bearer token for the OpenHAB REST API |
-| `OPENHAB_BASE_URL`  | `http://openhab.feurle.com`  | Base URL of your OpenHAB instance     |
+| `OPENHAB_BASE_URL`  | `http://localhost:8080`  | Base URL of your OpenHAB instance     |
 
 **Change OpenHab URL:**
 
 If your OpenHab instance runs on a different host:
 
 ```bash
-OPENHAB_API_TOKEN="your-token" OPENHAB_BASE_URL="http://192.168.1.100:8080" ./gradlew bootRun
+OPENHAB_API_TOKEN="your-token" OPENHAB_BASE_URL="http://localhost:8080" ./gradlew bootRun
 ```
 
 ## MCP Client Configuration
