@@ -8,6 +8,32 @@ A Spring Boot application that provides a **Model Context Protocol (MCP) Server*
 - An **OpenHab** instance that is reachable (local or over network)
 - **API Token** for OpenHab (create one in OpenHab settings under Users)
 
+## Architecture
+
+```
+AI/LLM Client
+    ↓  SSE (MCP Protocol) on port 8081
+Spring Boot MCP Server
+    ↓
+OpenHabTools  →  OpenHabClient  →  OpenHab REST API  →  Smart Home Devices
+```
+
+**Key source files under `src/main/java/com/feurle/ai/mcp/`:**
+
+- `McpOpenhabServer.java` — Spring Boot entry point
+- `config/OpenHabConfig.java` — `@ConfigurationProperties` for `openhab.base-url` and `openhab.api-token`
+- `config/McpServerConfig.java` — Registers `OpenHabTools` methods as MCP `ToolCallbackProvider`
+- `client/OpenHabClient.java` — Reactive `WebClient` wrapper for the OpenHab REST API (get state, list items, send commands)
+- `tools/OpenHabTools.java` — `@Tool`-annotated methods exposed to LLM clients: `getItemState`, `getAllItems`, `turnSwitch`, `toggleSwitch`
+
+## Technology Stack
+
+- Spring Boot 4.0.3 with Spring WebFlux (reactive/non-blocking)
+- Spring AI MCP Server 2.0.0-M2 (`spring-ai-starter-mcp-server-webflux`)
+- Lombok for boilerplate reduction
+- Spotless with Google Java Format for code formatting
+- Gradle 9.3.1 wrapper (use `./gradlew`)
+
 ## Quick Start
 
 ### 1. Configure
@@ -119,6 +145,25 @@ The JAR will be in `build/libs/` and can be run with `java -jar`.
 **Build Docker image:**
 ```bash
 ./gradlew bootBuildImage
+```
+
+## Development Commands
+
+```bash
+# Build
+./gradlew build
+
+# Run tests
+./gradlew test
+
+# Format code (Spotless with Google Java Format)
+./gradlew spotlessApply
+
+# Check code formatting without modifying
+./gradlew spotlessCheck
+
+# Clean
+./gradlew clean
 ```
 
 ## Resources
