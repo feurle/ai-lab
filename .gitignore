@@ -13,5 +13,8 @@ Thumbs.db
 .env
 .env.local
 
+# Root-level Node deps (e.g. @github/copilot CLI)
+node_modules/
+
 # Each subproject under mcp-servers/ (and elsewhere) keeps its own .gitignore
 # for language-specific build artifacts (target/, build/, .venv/, __pycache__/, etc.).
