@@ -7,7 +7,7 @@ A small lab for OpenHAB-focused MCP (Model Context Protocol) servers. There is n
 
 Both implementations talk to an OpenHAB instance through its REST API and require an API token plus the base URL. They expose the same four tools (`get_item_state`/`getItemState`, `get_all_items`/`getAllItems`, `turn_switch`/`turnSwitch`, `toggle_switch`/`toggleSwitch`); keep behavior parity between them when changing one.
 
-The repo root also holds reusable Claude Code `skills/`:
+The repo root also holds reusable `skills/` in Anthropic's Claude Skill format (`SKILL.md` with YAML frontmatter, optional `references/`). That format is currently auto-loaded by Claude Code / Claude apps, but the instructional content itself is tool-agnostic and can be adapted into Copilot custom instructions, opencode config, or any other coding agent's own format:
 - `git-branching-workflow` — mandatory trunk-based / GitHub Flow with Conventional Commits: never commit directly to `trunk`; branch as `<type>/<kebab-description>` (`feature/`, `fix/`, `hotfix/`, `chore/`, `docs/`, `refactor/`); commits and PR titles follow `<type>(<scope>): <description>`; PRs target `trunk`, squash-merge by default, delete branch after merge.
 - `ddd-architect` — Domain-Driven Design modeling skill (strategic + tactical design, EventStorming, Java/Spring scaffolding); reference material under `skills/ddd-architect/references/`.
 
