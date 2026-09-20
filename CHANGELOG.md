@@ -7,6 +7,20 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.1.0] - 2026-09-20
+
+### Added
+
 - `AGENTS.md` als zentrale Instruktionsdatei für KI-Coding-Agents (Repo-Struktur, Befehle, Konventionen) ergänzt.
 - `git-branching-workflow` und `updating-changelog` sind jetzt zusätzlich unter `.claude/skills/` im Projekt verlinkt, damit Claude Code sie in diesem Repo automatisch lädt.
 - `scripts/install-skills.sh` / `scripts/uninstall-skills.sh` ergänzt, um alle Skills global unter `~/.claude/skills/` (Claude Code) bzw. `~/.agents/skills/` (opencode, GitHub Copilot CLI) zu (de)installieren.
