@@ -1,5 +1,7 @@
 # ai-lab
 
+Current release: [v0.1.0](https://github.com/feurle/ai-lab/releases/tag/v0.1.0) (2026-09-20). See [CHANGELOG.md](CHANGELOG.md) for details.
+
 A small lab for OpenHAB-focused MCP (Model Context Protocol) servers. There is no shared build system — each subproject under `mcp-servers/` has its own toolchain and must be built/tested from within its own directory.
 
 - `mcp-servers/openhab-python` is the canonical, Python-based MCP server. It's what the root `opencode.jsonc` launches via `uv run openhab-mcp --transport stdio`.
