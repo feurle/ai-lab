@@ -1,10 +1,14 @@
 {
   "mcpServers": {
-    "openhab": {
-      "command": "sh",
+    "mcp-openhab-python": {
+      "command": "${HOME}/.local/bin/uv",
       "args": [
-        "-c",
-        "cd mcp-servers/openhab-python && exec uv run openhab-mcp --transport stdio"
+        "--directory",
+        "mcp-servers/openhab-python",
+        "run",
+        "openhab-mcp",
+        "--transport",
+        "stdio"
       ]
     }
   }
