@@ -11,6 +11,8 @@ The repo root also holds reusable `skills/` in Anthropic's Claude Skill format (
 - `git-branching-workflow` — mandatory trunk-based / GitHub Flow with Conventional Commits: never commit directly to `trunk`; branch as `<type>/<kebab-description>` (`feature/`, `fix/`, `hotfix/`, `chore/`, `docs/`, `refactor/`); commits and PR titles follow `<type>(<scope>): <description>`; PRs target `trunk`, squash-merge by default, delete branch after merge.
 - `ddd-architect` — Domain-Driven Design modeling skill (strategic + tactical design, EventStorming, Java/Spring scaffolding); reference material under `skills/ddd-architect/references/`.
 
+Run `scripts/install-skills.sh` to symlink these skills into the global, per-user skill directories that Claude Code (`~/.claude/skills/`), opencode, and GitHub Copilot CLI (both `~/.agents/skills/`) auto-discover, so they're available in every project, not just this one. `scripts/uninstall-skills.sh` removes them again.
+
 ## Python MCP server (`mcp-servers/openhab-python`)
 
 Built on the official `mcp` SDK (FastMCP) and `httpx`. Pins Python 3.11+, uses `uv`, dev dependencies in `pyproject.toml`.
