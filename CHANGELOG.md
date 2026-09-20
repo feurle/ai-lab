@@ -14,6 +14,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 ### Changed
 
 - `updating-changelog`-Skill präzisiert: Einträge werden im Feature-/Fix-/Hotfix-Branch selbst ergänzt (als Teil des PRs), nicht nachträglich auf `trunk`; falsche `deploy.sh`-Automatik-Referenz entfernt; Hinweis zum Umgang mit Merge-Konflikten in `CHANGELOG.md` ergänzt.
+- Der Changelog-Prozess für dieses Repo ist jetzt verbindlich dokumentiert: Änderungen in `CHANGELOG.md` landen im selben Branch wie der Code-PR und werden bei Konflikten gemeinsam mit beiden Einträgen erhalten.
 
 ### Deprecated
 
