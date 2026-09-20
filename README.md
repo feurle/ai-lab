@@ -63,7 +63,7 @@ cd mcp-servers/openhab-java
 
 ## Configuration
 
-Both servers read `OPENHAB_API_TOKEN` (required) and `OPENHAB_BASE_URL` (default `http://localhost:8080`) from the environment or a git-ignored `.env` file (see `.env.example` in each project). Shell environment variables override `.env` values. `opencode.jsonc` at the repo root registers the Python server so local MCP-aware tools can invoke it without extra setup — keep transport and working-directory assumptions there consistent if you change the server path or command.
+Both servers read `OPENHAB_API_TOKEN` (required) and `OPENHAB_BASE_URL` (default `http://localhost:8080`) from the environment or a git-ignored `.env` file (see `.env.example` in each project). Shell environment variables override `.env` values. `opencode.jsonc` and `.mcp.json` at the repo root register the Python server for opencode and Claude Code respectively, scoped to this project only, so local MCP-aware tools can invoke it without extra setup — keep transport and working-directory assumptions in both consistent if you change the server path or command.
 
 ## Conventions
 
