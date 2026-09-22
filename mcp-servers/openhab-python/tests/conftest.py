@@ -39,5 +39,6 @@ def fake_client() -> FakeOpenHabClient:
 
 @pytest.fixture(autouse=True)
 def _isolate_from_dotenv(monkeypatch, tmp_path):
-    """Run tests from an empty directory so a developer's .env is never picked up."""
+    """Run tests from an empty directory so a developer's .env files are never picked up."""
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "xdg"))

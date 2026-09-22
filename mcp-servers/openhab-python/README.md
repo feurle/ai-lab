@@ -25,8 +25,10 @@ The server listens on `http://0.0.0.0:8081/mcp` (streamable-http) by default.
 
 ## Configuration
 
-Everything is configured via environment variables, read from the shell or from a `.env` file in the
-project directory (see `.env.example`; `.env` is git-ignored). CLI flags override the transport settings.
+Everything is configured via environment variables, read from the shell, from a `.env` file in the
+project directory (see `.env.example`; `.env` is git-ignored), or from the per-user file
+`${XDG_CONFIG_HOME:-~/.config}/openhab-mcp/.env`. Precedence: shell env > project `.env` > user file >
+defaults. CLI flags override the transport settings.
 
 | Variable            | Default                     | Description                                        |
 |---------------------|-----------------------------|----------------------------------------------------|
@@ -73,17 +75,29 @@ For `--transport sse` use `"url": "http://localhost:8081/sse"`.
       "args": [
         "--directory", "/absolute/path/to/ai-lab/mcp-servers/openhab-python",
         "run", "openhab-mcp", "--transport", "stdio"
-      ],
-      "env": {
-        "OPENHAB_API_TOKEN": "your-api-token-here",
-        "OPENHAB_BASE_URL": "http://localhost:8080"
-      }
+      ]
     }
   }
 }
 ```
 
+The token comes from the project `.env` or the user file (see [Configuration](#configuration)). Avoid
+putting it into the client's `env` block, since that copies it in plaintext into every client config.
+
 With Claude Code: `claude mcp add openhab --transport http http://localhost:8081/mcp`.
+
+### User-wide install (all projects)
+
+```bash
+./install-user.sh     # registers stdio server with Claude Code, Copilot CLI and opencode
+./uninstall-user.sh   # removes those registrations
+```
+
+`install-user.sh` runs `uv sync` and registers
+`uv --directory <this checkout> run openhab-mcp --transport stdio` at user scope for each tool it finds.
+If `~/.config/openhab-mcp/.env` doesn't exist yet, it prompts for the base URL and token (or copies them
+from the project `.env`) and writes the file with mode `600`. The file is never overwritten, and
+`uninstall-user.sh` keeps it. Re-run the installer if you move the checkout.
 
 ## Available Tools
 
