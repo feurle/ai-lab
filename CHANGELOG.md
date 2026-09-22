@@ -9,12 +9,17 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 - `mcp-servers/openhab-python/install-user.sh` / `uninstall-user.sh` registrieren den Python-OpenHAB-Server benutzerweit bei Claude Code, GitHub Copilot CLI und opencode.
 - Der Python-Server liest `OPENHAB_API_TOKEN` / `OPENHAB_BASE_URL` zusätzlich aus der benutzerweiten Datei `~/.config/openhab-mcp/.env` (respektiert `XDG_CONFIG_HOME`; Priorität: Shell-Env > Projekt-`.env` > User-Datei). `install-user.sh` legt sie bei Bedarf interaktiv mit Modus `600` an, sodass der Token in keiner MCP-Client-Config landet.
+- `mcp-servers/chrome-devtools/install-user.sh` / `uninstall-user.sh` installieren `chrome-devtools-mcp` nur für den aktuellen User (npm nach `~/.local`) und registrieren es bei Claude Code, GitHub Copilot CLI und opencode.
 
 ### Changed
+
+- MCP-Server werden nur noch benutzerweit über die `install-user.sh`-Skripte registriert; nach dem Klonen einmal `mcp-servers/openhab-python/install-user.sh` ausführen.
 
 ### Deprecated
 
 ### Removed
+
+- Projektweite MCP-Konfiguration `opencode.jsonc` und `.mcp.json` im Repo-Root entfernt.
 
 ### Fixed
 

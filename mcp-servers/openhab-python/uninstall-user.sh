@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Removes the per-user openhab-python MCP registrations (Claude Code, Copilot
 # CLI, opencode) written by install-user.sh. The checkout and its .venv are
-# left untouched; the project-scoped .mcp.json / opencode.jsonc still work.
+# left untouched.
 # The user secrets file is kept too -- delete it yourself if the token should go.
 set -euo pipefail
 
