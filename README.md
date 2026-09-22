@@ -4,8 +4,9 @@ Current release: [v0.1.0](https://github.com/feurle/ai-lab/releases/tag/v0.1.0) 
 
 A small lab for OpenHAB-focused MCP (Model Context Protocol) servers. There is no shared build system — each subproject under `mcp-servers/` has its own toolchain and must be built/tested from within its own directory.
 
-- `mcp-servers/openhab-python` is the canonical, Python-based MCP server. It's what the root `opencode.jsonc` launches via `uv run openhab-mcp --transport stdio`.
+- `mcp-servers/openhab-python` is the canonical, Python-based MCP server. Its `install-user.sh` registers it (stdio transport) with Claude Code, GitHub Copilot CLI and opencode for the current user.
 - `mcp-servers/openhab-java` is a parallel Spring Boot implementation of the same idea, useful as a reference or alternative deployment.
+- `mcp-servers/chrome-devtools` contains helper scripts/docs to install `chrome-devtools-mcp` for the current user only (npm install into `~/.local`, plus per-user MCP config entries).
 
 Both implementations talk to an OpenHAB instance through its REST API and require an API token plus the base URL. They expose the same four tools (`get_item_state`/`getItemState`, `get_all_items`/`getAllItems`, `turn_switch`/`turnSwitch`, `toggle_switch`/`toggleSwitch`); keep behavior parity between them when changing one.
 
@@ -67,10 +68,10 @@ cd mcp-servers/openhab-java
 
 ## Configuration
 
-Both servers read `OPENHAB_API_TOKEN` (required) and `OPENHAB_BASE_URL` (default `http://localhost:8080`) from the environment or a git-ignored `.env` file (see `.env.example` in each project). Shell environment variables override `.env` values. The Python server also falls back to a per-user `~/.config/openhab-mcp/.env`, which `mcp-servers/openhab-python/install-user.sh` creates when registering the server user-wide (Python server only). `opencode.jsonc` and `.mcp.json` at the repo root register the Python server for opencode and MCP-aware clients respectively, scoped to this project only, so local MCP-aware tools can invoke it without extra setup. `.mcp.json` is read natively by both Claude Code and GitHub Copilot CLI (same `mcpServers` schema); it uses `${HOME}` and a relative `--directory` argument rather than Claude Code's `${CLAUDE_PROJECT_DIR}`, so the same config works unmodified in Copilot CLI. Keep transport and working-directory assumptions in both files consistent if you change the server path or command.
+Both servers read `OPENHAB_API_TOKEN` (required) and `OPENHAB_BASE_URL` (default `http://localhost:8080`) from the environment or a git-ignored `.env` file (see `.env.example` in each project). Shell environment variables override `.env` values. The Python server also falls back to a per-user `~/.config/openhab-mcp/.env`, which `mcp-servers/openhab-python/install-user.sh` creates when registering the server user-wide (Python server only). The repo deliberately ships no project-scoped MCP client config (`.mcp.json`, `opencode.jsonc`). Register servers once per user with the `install-user.sh` script in `mcp-servers/openhab-python` or `mcp-servers/chrome-devtools`; they are then available in every project.
 
 ## Conventions
 
 - Root-level configuration is intentionally minimal; don't add broad app scaffolding here unless the repo is intentionally expanded.
-- When changing an MCP tool contract, update the corresponding project README and the `opencode.jsonc` config entry used by clients.
+- When changing an MCP tool contract, update the corresponding project README and, if the launch command changes, the server's `install-user.sh`.
 - Prefer surgical changes within each `mcp-servers/*` project rather than root-level changes; this is not a conventional full-stack app.
