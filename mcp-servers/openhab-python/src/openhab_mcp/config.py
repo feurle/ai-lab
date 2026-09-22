@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 from dotenv import find_dotenv, load_dotenv
 
@@ -13,6 +14,12 @@ DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 8081
 
 TRANSPORTS = ("streamable-http", "sse", "stdio")
+
+
+def user_env_file() -> Path:
+    """Per-user secrets file: ``$XDG_CONFIG_HOME/openhab-mcp/.env`` (default ``~/.config``)."""
+    base = os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config"
+    return Path(base) / "openhab-mcp" / ".env"
 
 
 class ConfigError(RuntimeError):
@@ -33,19 +40,23 @@ class Settings:
     def from_env(cls) -> Settings:
         """Build settings from the environment.
 
-        A ``.env`` file in the current directory (or a parent) is loaded first;
-        variables already present in the environment take precedence.
+        A ``.env`` file in the current directory (or a parent) is loaded first,
+        then the per-user file from :func:`user_env_file`. Neither overrides
+        what is already set, so precedence is: environment > project ``.env``
+        > user file > defaults.
 
         Env vars: OPENHAB_BASE_URL, OPENHAB_API_TOKEN (required),
         MCP_TRANSPORT, MCP_HOST, MCP_PORT.
         """
         load_dotenv(find_dotenv(usecwd=True), override=False)
+        load_dotenv(user_env_file(), override=False)
 
         token = os.environ.get("OPENHAB_API_TOKEN", "").strip()
         if not token:
             raise ConfigError(
                 "OPENHAB_API_TOKEN is not set. Create an API token in OpenHAB "
-                "(Settings -> Users) and export it before starting the server."
+                "(Settings -> Users) and export it, or put it in a .env file or "
+                f"{user_env_file()}."
             )
 
         transport = os.environ.get("MCP_TRANSPORT", DEFAULT_TRANSPORT)

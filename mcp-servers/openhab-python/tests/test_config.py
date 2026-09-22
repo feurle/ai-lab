@@ -57,3 +57,40 @@ def test_from_env_loads_dotenv_file(monkeypatch, tmp_path):
 
     assert s.api_token == "from-dotenv"
     assert s.base_url == "http://dotenv.example"
+
+
+def _write_user_env(tmp_path, text):
+    path = tmp_path / "xdg" / "openhab-mcp" / ".env"
+    path.parent.mkdir(parents=True)
+    path.write_text(text)
+
+
+def test_from_env_loads_user_env_file(monkeypatch, tmp_path):
+    monkeypatch.delenv("OPENHAB_API_TOKEN", raising=False)
+    monkeypatch.delenv("OPENHAB_BASE_URL", raising=False)
+    _write_user_env(tmp_path, "OPENHAB_API_TOKEN=from-user\nOPENHAB_BASE_URL=http://user.example\n")
+
+    s = Settings.from_env()
+
+    assert s.api_token == "from-user"
+    assert s.base_url == "http://user.example"
+
+
+def test_project_dotenv_wins_over_user_env_file(monkeypatch, tmp_path):
+    monkeypatch.delenv("OPENHAB_API_TOKEN", raising=False)
+    monkeypatch.delenv("OPENHAB_BASE_URL", raising=False)
+    _write_user_env(tmp_path, "OPENHAB_API_TOKEN=from-user\nOPENHAB_BASE_URL=http://user.example\n")
+    (tmp_path / ".env").write_text("OPENHAB_API_TOKEN=from-dotenv\n")
+
+    s = Settings.from_env()
+
+    assert s.api_token == "from-dotenv"
+    assert s.base_url == "http://user.example"
+
+
+def test_environment_wins_over_env_files(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENHAB_API_TOKEN", "from-shell")
+    _write_user_env(tmp_path, "OPENHAB_API_TOKEN=from-user\n")
+    (tmp_path / ".env").write_text("OPENHAB_API_TOKEN=from-dotenv\n")
+
+    assert Settings.from_env().api_token == "from-shell"
