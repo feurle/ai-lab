@@ -7,6 +7,7 @@ A small lab for OpenHAB-focused MCP (Model Context Protocol) servers. There is n
 - `mcp-servers/openhab-python` is the canonical, Python-based MCP server. Its `install-user.sh` registers it (stdio transport) with Claude Code, GitHub Copilot CLI and opencode for the current user.
 - `mcp-servers/openhab-java` is a parallel Spring Boot implementation of the same idea, useful as a reference or alternative deployment.
 - `mcp-servers/chrome-devtools` contains helper scripts/docs to install `chrome-devtools-mcp` for the current user only (npm install into `~/.local`, plus per-user MCP config entries).
+- `commands/send-last` is an opencode command: `/send-last <email-address>` mails the last assistant answer (Markdown as plain text plus rendered HTML) via SMTP. Its `install-user.sh` symlinks it into `~/.local/bin` and `~/.config/opencode/commands/`; SMTP credentials live in `~/.config/send-last/smtp.conf`, never in the repo.
 
 Both implementations talk to an OpenHAB instance through its REST API and require an API token plus the base URL. They expose the same four tools (`get_item_state`/`getItemState`, `get_all_items`/`getAllItems`, `turn_switch`/`turnSwitch`, `toggle_switch`/`toggleSwitch`); keep behavior parity between them when changing one.
 

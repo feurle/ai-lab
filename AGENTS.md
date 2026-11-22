@@ -9,6 +9,7 @@ Small lab for OpenHAB-focused MCP servers. **No shared build system** — each s
 - `mcp-servers/openhab-python` — canonical implementation (Python, FastMCP). Registered user-wide via its `install-user.sh` (stdio transport).
 - `mcp-servers/openhab-java` — parallel Spring Boot implementation, same behavior.
 - `mcp-servers/chrome-devtools` — no server code, only `install-user.sh` / `uninstall-user.sh` for the third-party `chrome-devtools-mcp`.
+- `commands/send-last` — opencode command `/send-last <email-address>` (Python script run via `uv`, plus the command Markdown). Installed per user by its `install-user.sh` as symlinks; SMTP credentials stay in `${XDG_CONFIG_HOME:-~/.config}/send-last/smtp.conf` (0600), never in the repo.
 - `skills/` — reusable Claude Skill format (`SKILL.md` + frontmatter), tool-agnostic content adaptable to other agents' own instruction formats.
 
 Both MCP servers expose the same four tools (`get_item_state`/`getItemState`, `get_all_items`/`getAllItems`, `turn_switch`/`turnSwitch`, `toggle_switch`/`toggleSwitch`) against the OpenHAB REST API. **Keep behavior parity between them** when changing one.

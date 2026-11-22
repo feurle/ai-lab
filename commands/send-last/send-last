@@ -1,0 +1,176 @@
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["markdown"]
+# ///
+"""Send the last assistant answer of the current OpenCode session by email.
+
+Usage: send-last <email-address>
+
+Reads OPENCODE_SESSION_ID from the environment and SMTP settings from
+${XDG_CONFIG_HOME:-~/.config}/send-last/smtp.conf (key = value lines: host, port,
+user, password, from).
+"""
+
+import html
+import json
+import os
+import re
+import shutil
+import smtplib
+import ssl
+import subprocess
+import sys
+from email.message import EmailMessage
+from email.utils import formatdate, make_msgid
+from pathlib import Path
+
+CONFIG = (
+    Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+    / "send-last"
+    / "smtp.conf"
+)
+EMAIL_RE = re.compile(r"^[^@\s,;<>]+@[^@\s,;<>]+\.[^@\s,;<>]+$")
+
+
+def die(msg: str) -> None:
+    print(f"send-last: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+def opencode_bin() -> str:
+    found = shutil.which("opencode")
+    if found:
+        return found
+    fallback = Path.home() / ".opencode" / "bin" / "opencode"
+    if fallback.exists():
+        return str(fallback)
+    die("opencode binary not found")
+
+
+def api_get(path: str) -> dict:
+    result = subprocess.run(
+        [opencode_bin(), "api", "get", path], capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        die(f"opencode api get {path} failed: {result.stderr.strip()}")
+    return json.loads(result.stdout)
+
+
+def load_config() -> dict:
+    if not CONFIG.exists():
+        die(f"missing {CONFIG}")
+    cfg = {}
+    for line in CONFIG.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        cfg[key.strip().lower()] = value.strip()
+    for key in ("host", "port", "user", "password"):
+        if not cfg.get(key):
+            die(f"'{key}' is not set in {CONFIG}")
+    cfg.setdefault("from", cfg["user"])
+    return cfg
+
+
+def last_answer(session_id: str) -> str:
+    """Collect the text parts of the assistant turn before the latest user prompt."""
+    texts = []
+    seen_prompt = False
+    cursor = None
+    while True:
+        path = f"/api/session/{session_id}/message?"
+        path += f"cursor={cursor}" if cursor else "order=desc&limit=100"
+        page = api_get(path)
+        for msg in page.get("data", []):
+            kind = msg.get("type")
+            if kind == "user":
+                if not seen_prompt:
+                    # The /send-last prompt itself
+                    seen_prompt = True
+                    continue
+                return "\n\n".join(reversed(texts)).strip()
+            if kind == "assistant" and seen_prompt:
+                parts = [
+                    p.get("text", "")
+                    for p in msg.get("content", [])
+                    if p.get("type") == "text" and p.get("text", "").strip()
+                ]
+                if parts:
+                    texts.append("\n\n".join(parts))
+        cursor = (page.get("cursor") or {}).get("next")
+        if not cursor:
+            return "\n\n".join(reversed(texts)).strip()
+
+
+def render_html(text: str) -> str:
+    try:
+        import markdown
+
+        body = markdown.markdown(
+            text, extensions=["fenced_code", "tables", "sane_lists", "nl2br"]
+        )
+    except ImportError:
+        body = f"<pre>{html.escape(text)}</pre>"
+    return f"""<!doctype html>
+<html><head><meta charset="utf-8"><style>
+body {{ font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif; line-height: 1.5; color: #222; max-width: 820px; }}
+pre {{ background: #f6f8fa; padding: 12px; border-radius: 6px; overflow-x: auto; }}
+code {{ font-family: SFMono-Regular, Consolas, Menlo, monospace; font-size: 90%; background: #f6f8fa; padding: 1px 4px; border-radius: 4px; }}
+pre code {{ padding: 0; background: none; }}
+table {{ border-collapse: collapse; }}
+th, td {{ border: 1px solid #ddd; padding: 4px 8px; }}
+blockquote {{ border-left: 4px solid #ddd; margin: 0; padding-left: 12px; color: #555; }}
+</style></head><body>
+{body}
+</body></html>"""
+
+
+def main() -> None:
+    if len(sys.argv) != 2 or not EMAIL_RE.match(sys.argv[1].strip()):
+        die("usage: send-last <email-address>")
+    recipient = sys.argv[1].strip()
+
+    session_id = os.environ.get("OPENCODE_SESSION_ID")
+    if not session_id:
+        die("OPENCODE_SESSION_ID is not set (run this from an OpenCode session)")
+
+    cfg = load_config()
+    text = last_answer(session_id)
+    if not text:
+        die("no previous assistant answer with text found")
+
+    title = api_get(f"/api/session/{session_id}").get("data", {}).get("title")
+    subject = f"[opencode] {title}" if title else "[opencode] Letzte Antwort"
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = cfg["from"]
+    msg["To"] = recipient
+    msg["Date"] = formatdate(localtime=True)
+    msg["Message-ID"] = make_msgid()
+    msg.set_content(text)
+    msg.add_alternative(render_html(text), subtype="html")
+
+    port = int(cfg["port"])
+    context = ssl.create_default_context()
+    try:
+        if port == 465:
+            server = smtplib.SMTP_SSL(cfg["host"], port, context=context, timeout=30)
+        else:
+            server = smtplib.SMTP(cfg["host"], port, timeout=30)
+            server.starttls(context=context)
+        with server:
+            server.login(cfg["user"], cfg["password"])
+            server.send_message(msg)
+    except (smtplib.SMTPAuthenticationError, smtplib.SMTPServerDisconnected) as err:
+        die(f"login failed ({err}) - check user/app password in {CONFIG}")
+    except (smtplib.SMTPException, OSError) as err:
+        die(f"sending failed: {err}")
+
+    print(f"Sent '{subject}' ({len(text)} chars) to {recipient}")
+
+
+if __name__ == "__main__":
+    main()
