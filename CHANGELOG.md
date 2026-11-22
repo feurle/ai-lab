@@ -7,6 +7,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ### Added
 
+- `commands/send-last`: opencode-Command `/send-last <adresse>`, der die letzte Antwort der Session (nur Text, Markdown als Plaintext plus gerendertes HTML) per SMTP verschickt. `install-user.sh` / `uninstall-user.sh` verlinken ihn benutzerweit nach `~/.local/bin` und `~/.config/opencode/commands/`; die SMTP-Zugangsdaten liegen in `~/.config/send-last/smtp.conf` (Modus `600`, respektiert `XDG_CONFIG_HOME`).
+
 ### Changed
 
 ### Deprecated
